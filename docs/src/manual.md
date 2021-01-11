@@ -55,7 +55,9 @@ In the arrow data format, specific logical types are supported, a list of which 
 
 * `Date`, `Time`, `Timestamp`, and `Duration` all have natural Julia definitions in `Dates.Date`, `Dates.Time`, `TimeZones.ZonedDateTime`, and `Dates.Period` subtypes, respectively. 
 * `Char` and `Symbol` Julia types are mapped to arrow string types, with additional metadata of the original Julia type; this allows deserializing directly to `Char` and `Symbol` in Julia, while other language implementations will see these columns as just strings
+* Similarly to the above, the `UUID` Julia type is mapped to a 128-bit `FixedSizeBinary` arrow type.
 * `Decimal128` and `Decimal256` have no corresponding builtin Julia types, so they're deserialized using a compatible type definition in Arrow.jl itself: `Arrow.Decimal`
+
 
 Note that when `convert=false` is passed, data will be returned in Arrow.jl-defined types that exactly match the arrow definitions of those types; the authoritative source for how each type represents its data can be found in the arrow [`Schema.fbs`](https://github.com/apache/arrow/blob/master/format/Schema.fbs) file.
 
@@ -118,7 +120,7 @@ With `Arrow.write`, you provide either an `io::IO` argument or `file::String` to
 What are some examples of Tables.jl-compatible sources? A few examples include:
 * `Arrow.write(io, df::DataFrame)`: A `DataFrame` is a collection of indexable columns
 * `Arrow.write(io, CSV.File(file))`: read data from a csv file and write out to arrow format
-* `Arrow.write(io, DBInterface.execute(db, sql_query))`: Execute an SQL query against a database via the [`DBInterface.jl`](https://github.com/JuliaDatabases/DBInterface.jl) interface, and write the query resultset out directly in the arrow format. Packages that implement DBInterface include [SQLite.jl](https://juliadatabases.github.io/SQLite.jl/stable/), [MySQL.jl](https://juliadatabases.github.io/MySQL.jl/dev/), and [ODBC.jl](http://juliadatabases.github.io/ODBC.jl/latest/). 
+* `Arrow.write(io, DBInterface.execute(db, sql_query))`: Execute an SQL query against a database via the [`DBInterface.jl`](https://github.com/JuliaDatabases/DBInterface.jl) interface, and write the query resultset out directly in the arrow format. Packages that implement DBInterface include [SQLite.jl](https://juliadatabases.github.io/SQLite.jl/stable/), [MySQL.jl](https://juliadatabases.github.io/MySQL.jl/dev/), and [ODBC.jl](http://juliadatabases.github.io/ODBC.jl/latest/).
 * `df |> @map(...) |> Arrow.write(io)`: Write the results of a [Query.jl](https://www.queryverse.org/Query.jl/stable/) chain of operations directly out as arrow data
 * `jsontable(json) |> Arrow.write(io)`: Treat a json array of objects or object of arrays as a "table" and write it out as arrow data using the [JSONTables.jl](https://github.com/JuliaData/JSONTables.jl) package
 * `Arrow.write(io, (col1=data1, col2=data2, ...))`: a `NamedTuple` of `AbstractVector`s or an `AbstractVector` of `NamedTuple`s are both considered tables by default, so they can be quickly constructed for easy writing of arrow data if you already have columns of data
