@@ -17,6 +17,7 @@
 using Test, Arrow, Tables, Dates, PooledArrays, TimeZones, UUIDs, CategoricalArrays
 
 include(joinpath(dirname(pathof(Arrow)), "../test/testtables.jl"))
+include(joinpath(dirname(pathof(Arrow)), "../test/testappend.jl"))
 include(joinpath(dirname(pathof(Arrow)), "../test/integrationtest.jl"))
 include(joinpath(dirname(pathof(Arrow)), "../test/dates.jl"))
 
@@ -39,6 +40,12 @@ for case in testtables
 end
 
 end # @testset "table roundtrips"
+
+@testset "table append" begin
+
+    testappend()
+
+end # @testset "table append"
 
 @testset "arrow json integration tests" begin
 
