@@ -60,7 +60,7 @@ end
 function append(io, source, largelists, compress, denseunions, dictencode, dictencodenested, alignment, maxdepth, ntasks)
     bytes = Mmap.mmap(io)
     stream = Arrow.Stream(bytes)
-    arrow_schema = Tables.schema(Tables.columns(stream))
+    arrow_schema = Tables.schema(Tables.columns(first(stream)))
     dictencodings = stream.dictencodings
     firstcols = toarrowtable(stream, dictencodings, largelists, compress, denseunions, dictencode, dictencodenested, maxdepth)
     sch = Ref{Tables.Schema}(Tables.schema(firstcols))
@@ -160,8 +160,6 @@ end
 function is_equivalent_schema(sch1::Tables.Schema, sch2::Tables.Schema)
     (sch1.names == sch2.names) || (return false)
     for (t1,t2) in zip(sch1.types, sch2.types)
-        (t1 <: Arrow.ArrowVector) && (t1 = eltype(t1))
-        (t2 <: Arrow.ArrowVector) && (t2 = eltype(t2))
         (t1 === t2) || (return false)
     end
     true
