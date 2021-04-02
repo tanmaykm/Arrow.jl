@@ -1,12 +1,8 @@
 function testappend()
     mktempdir() do path
-        path = "/tmp/tmp1"
-        mkpath(path)
-
         testdata = (col1=Int64[1,2,3,4,5,6,7,8,9,10],)
         file1 = joinpath(path, "table1.arrow")
         file2 = joinpath(path, "table2.arrow")
-        @info file1, file2
         Arrow.write(file1, testdata)
         Arrow.write(file2, testdata)
 
