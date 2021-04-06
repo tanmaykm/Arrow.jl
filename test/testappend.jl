@@ -3,8 +3,12 @@ function testappend()
         testdata = (col1=Int64[1,2,3,4,5,6,7,8,9,10],)
         file1 = joinpath(path, "table1.arrow")
         file2 = joinpath(path, "table2.arrow")
-        Arrow.write(file1, testdata)
-        Arrow.write(file2, testdata)
+        open(file1, "w") do io
+            Arrow.write(io, testdata; file=false)
+        end
+        open(file2, "w") do io
+            Arrow.write(io, testdata; file=false)
+        end
 
         # start
         # arrow_table1: 1 partition, 10 rows
