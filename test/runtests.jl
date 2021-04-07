@@ -14,10 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-using Test, Arrow, Tables, Dates, PooledArrays, TimeZones, UUIDs, CategoricalArrays, DataAPI
+using Test, Arrow, Tables, Dates, PooledArrays, TimeZones, UUIDs, CategoricalArrays
 
-include(joinpath(dirname(pathof(Arrow)), "ArrowTypes/test/tests.jl"))
 include(joinpath(dirname(pathof(Arrow)), "../test/testtables.jl"))
+include(joinpath(dirname(pathof(Arrow)), "../test/testappend.jl"))
 include(joinpath(dirname(pathof(Arrow)), "../test/integrationtest.jl"))
 include(joinpath(dirname(pathof(Arrow)), "../test/dates.jl"))
 
@@ -40,6 +40,12 @@ for case in testtables
 end
 
 end # @testset "table roundtrips"
+
+@testset "table append" begin
+
+    testappend()
+
+end # @testset "table append"
 
 @testset "arrow json integration tests" begin
 
@@ -209,13 +215,6 @@ av = Arrow.toarrowvector(CategoricalArray(["a", "bb", "ccc"]))
 @test length(av) == 3
 @test eltype(av) == String
 
-# 120
-x = PooledArray(["hey", missing])
-x2 = Arrow.toarrowvector(x)
-@test eltype(DataAPI.refpool(x2)) == Union{Missing, String}
-@test eltype(DataAPI.levels(x2)) == String
-@test DataAPI.refarray(x2) == [1, 2]
-
 # 121
 a = PooledArray(repeat(string.('S', 1:130), inner=5), compress=true)
 @test eltype(a.refs) == UInt8
@@ -275,12 +274,6 @@ ArrowTypes.arrowmetadata(::Type{CustomStruct2{sym}}) where {sym} = sym
 ArrowTypes.JuliaType(::Val{:CustomStruct2}, S, meta) = CustomStruct2{Symbol(meta)}
 tbl = Arrow.Table(Arrow.tobuffer(t))
 @test eltype(tbl.col1) == CustomStruct2{:hey}
-
-# 170
-tbl = Arrow.Table(Arrow.tobuffer((x = [1,2,3],)))
-m = Dict("a" => "b")
-Arrow.setmetadata!(tbl, m)
-@test Arrow.getmetadata(tbl) === m
 
 end # @testset "misc"
 

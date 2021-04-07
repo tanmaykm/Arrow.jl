@@ -85,13 +85,14 @@ using .FlatBuffers
 include("metadata/Flatbuf.jl")
 using .Flatbuf; const Meta = Flatbuf
 
-include("ArrowTypes/src/ArrowTypes.jl")
+include("arrowtypes.jl")
 using .ArrowTypes
 include("utils.jl")
 include("arraytypes/arraytypes.jl")
 include("eltypes.jl")
 include("table.jl")
 include("write.jl")
+include("append.jl")
 
 const LZ4_FRAME_COMPRESSOR = LZ4FrameCompressor[]
 const ZSTD_COMPRESSOR = ZstdCompressor[]
